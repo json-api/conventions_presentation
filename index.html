@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>JSON API: Convention driven API design</title>
+
+		<meta name="description" content="A talk, about JSON API.">
+		<meta name="author" content="Steve Klabnik">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/night.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>JSON API</h1>
+					<h3>Convention driven API design</h3>
+					<p>
+          @steveklabnik
+					</p>
+				</section>
+
+        <section>
+        <p>The Zen of Python: explicit is better than implicit</p>
+        <p>Ruby on Rails: Convention over configuration</p>
+        </section>
+
+        <section>
+<code data-trim>
+  GET /<br />
+Host: steveklabnik.com
+</code>
+        </section>
+
+        <section>
+<code data-trim>
+$ curl -I steveklabnik.com<br />
+HTTP/1.1 200 OK<br />
+Content-Type: text/html
+</code>
+        </section>
+
+        <section>
+        <h2>Media types</h2>
+        <ul>
+          <li><code>text/plain</code></li>
+          <li><code>text/html</code></li>
+          <li><code>application/json</code></li>
+          <li><code>image/png</code></li>
+        </ul>
+        </section>
+
+        <section>
+        <h2>Zen or CoC?</h2>
+        <h3>Have our cake and eat it too</h3>
+        <p>Media types are <strong>explicit conventions</strong>.</p>
+        </section>
+
+        <section>
+        <h2>Zen or CoC?</h2>
+        <p>Media types are <strong>explicit</strong> because we have <code>Content-Type</code> and the related RFC.</p>
+        </section>
+
+        <section>
+        <h2>Zen or CoC?</h2>
+        <p>Media types are <strong>conventions</strong> because we have a shared understanding of processing rules.</p>
+        </section>
+
+        <section>
+        <h2>Common API media types</h2>
+        <ul>
+          <li><code>application/json</code></li>
+        </ul>
+        <blockquote>JavaScript Object Notation (JSON) is a lightweight, text-based, language-independent data interchange format.  It was derived from the ECMAScript Programming Language Standard.  JSON defines a small set of formatting rules for the portable representation of structured data.</blockquote>
+        </section>
+
+        <section>
+        <h2>Problems with JSON</h2>
+        <p>JSON's minimalism can only encode the vague structure of your data.</p>
+        <p>This has led to an explosion of bespoke, artisanal, hand-crafted APIs.</p>
+        </section>
+
+        <section>
+        <h2>Problems with JSON</h2>
+        <blockquote>The purpose of the Content-Type field is to describe the data contained in the body fully enough that the receiving user agent can pick an appropriate agent or mechanism to present the data to the user, or otherwise deal with the data in an appropriate manner. </blockquote>
+        </section>
+
+        <section>
+        <h2>Problems with JSON</h2>
+        <p>Any sufficiently advanced API contains an ad-hoc, informally specified implementation of some media type that extends JSON.</p>
+        </section>
+
+        <section>
+        <h2>Problems with JSON</h2>
+        <p><code>application/json</code> leads to bikeshedding. Bikeshedding leads to anger. Anger leads to hate. Hate leads to suffering.</p>
+        </section>
+
+        <section>
+        <h2>Solution:</h2>
+        <img src="http://imgs.xkcd.com/comics/standards.png" />
+        </section>
+
+        <section>
+        <h2>Solution:<br />JSON API</h2>
+        <p><a href="http://jsonapi.org">http://jsonapi.org</a></p>
+        </section>
+
+        <section>
+        <h2>JSON API</h2>
+        <p>JSON API assumes that you have some collection of data<br /> that you'd like to synchronize across a network boundary.</p>
+        <p>Its conventions allow you to build<br />a smart client that minimizes requests.</p>
+        </section>
+        <section>
+        <h2>JSON API</h2>
+        <p>It's based on real code used by real sites.<br />We use it at my employer to process payments.<br />If it's good enough for money, it's good enough for your API.</p>
+        <p>It's co-authored by Yehuda Katz and myself.</p>
+        </section>
+
+        <section>
+        <h2>JSON API</h2>
+        <p>Here&#39;s what JSON API (in the ID style) looks like:</p>
+        <pre><code data-trim>
+{
+  "posts": [{
+    "id": "1",
+    "title": "Rails is Omakase",
+    "links": {
+    "author": "9",
+    "comments": [ "5", "12", "17", "20" ]
+    }
+  }]
+}
+        </code></pre>
+        </section>
+        <section>
+        <h2>JSON API</h2>
+        <p>and in the URL style:</p>
+        <pre><code data-trim>
+{
+  "posts": [{
+    "id": "1",
+    "title": "Rails is Omakase",
+    "links": {
+      "author": "http://example.com/people/1",
+      "comments": "http://example.com/comments/5,12,17,20"
+    }
+  }]
+}
+        </code></pre>
+        </section>
+        <section>
+        <h2>JSON API</h2>
+        <p>URI Templates:</p>
+        <pre><code data-trim>
+{
+  "links": {
+    "posts.comments": "http://example.com/posts/{posts.id}/comments"
+  },
+  "posts": [{
+    "id": "1",
+    "title": "Rails is Omakase"
+  }, {
+    "id": "2",
+    "title": "The Parley Letter"
+  }]
+}
+        </code></pre>
+        </section>
+
+        <section>
+        <h2>JSON API</h2>
+        <p>Not just for <code>GET</code></p>
+        <pre><code data-trim>
+GET /photos
+
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+
+{
+  "photos": [{
+    "id": "1",
+    "title": "Mustaches on a Stick"
+    "src": "http://example.com/images/mustache.png"
+  }]
+}
+        </code></pre>
+        </section>
+
+        <section>
+        <h2>JSON API</h2>
+        <p>Not just for <code>GET</code></p>
+        <pre><code data-trim>
+POST /photos
+Content-Type: application/vnd.api+json
+Accept: application/vnd.api+json
+
+{
+  "photos": [{
+    "title": "Ember Hamster",
+    "src": "http://example.com/images/productivity.png"
+  }]
+}
+        </code></pre>
+        </section>
+        <section>
+        <h2>JSON API</h2>
+        <p>Not just for <code>GET</code></p>
+        <pre><code data-trim>
+GET /photos
+
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+
+{
+  "photos": [{
+    "id": "1",
+    "title": "Mustaches on a Stick"
+    "src": "http://example.com/images/mustache.png"
+  }, {
+    "id": "2",
+    "title": "Ember Hamster",
+    "src": "http://example.com/images/productivity.png"
+  }]
+}
+        </code></pre>
+        </section>
+
+        <section>
+        <h2>JSON API</h2>
+        <p><a href="http://restpack-serializer-sample.herokuapp.com/">Other examples</a></p>
+        </section>
+
+				<section>
+          <h2>Conclusion</h2>
+          <ul>
+            <li>Media types are explicit conventions.</li>
+            <li>Conventions improve productivity by reducing bikeshedding.</li>
+            <li>Conventions pave the path for reusability.</li>
+            <li>Pick a media type that fits your application.</li>
+            <li>If you don't know, try JSON API.</li>
+          </ul>
+				</section>
+
+				<section>
+					<h1>Thanks!</h1>
+          <h2>http://jsonapi.org</h2>
+					<p>
+          <a href="http://twitter.com/steveklabnik">@steveklabnik</a> / <a href="mailto:steve@steveklabnik.com">steve@steveklabnik.com</a>
+					</p>
+				</section>
+
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
